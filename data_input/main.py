@@ -11,6 +11,7 @@ class DataInput:
 
     def queue_article(self, article):
         # TODO: Queue article in SQS
+        pass
 
 if __name__ = "main":
     trader = Trader(json.load(open("../config.json")))

@@ -10,9 +10,11 @@ class Trader:
 
     def handle_message(self, message):
         # TODO: call queue_result
+        pass
 
     def queue_result(self, message):
         # TODO: queue in SQS
+        pass
 
 if __name__ = "main":
     trader = Trader(json.load(open("../config.json")))
