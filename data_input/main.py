@@ -1,17 +1,23 @@
+from news_api import NewsApi
 import json
+import time
 
 class DataInput:
     def __init__(self, config):
         self.config = config
 
-    def poll_for_articles(self):
+        self.sources = {}
+        for source in config["data_input"]["sources"]:
+            self.sources["source"] = NewsApi(config["data_input"]["news_api"]["api_key"], source["news_api_name"])
+
+    def pollForArticles(self):
         while True:
-            # TODO: call queue_article
-            sleep(config["data_input"]["poll_interval"])
+            for source in self.sources.values():
+                for article in source.getArticles():
+                    self.queueArticle(article)
 
-    def queue_article(self, article):
+            time.sleep(config["data_input"]["poll_interval"])
+
+    def queueArticle(self, article):
         # TODO: Queue article in SQS
-        pass
-
-if __name__ = "main":
-    trader = Trader(json.load(open("../config.json")))
+        print(article)
