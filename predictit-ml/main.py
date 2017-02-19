@@ -1,21 +1,24 @@
 import json
 from multiprocessing import Process, Queue
 
-import data_analysis
-import data_input
-import trader
+from data_analysis import data_analysis
+from data_input import data_input
+from trader import trader
 
 
-# Basic queue for the queue process
+# Main process
 class Bot:
 
+    # Process variables
     scraper_processes = []
     analysis_processes = []
     trader_process = None
 
+    # Queues to be delegated to sub-processes
     article_queue = Queue()
     result_queue = Queue()
 
+    # Initializes all of the processes
     def __init__(self, config):
         self.config = config
 
@@ -25,17 +28,28 @@ class Bot:
             )
         for num in range(0, config["data_analysis"]["num_workers"]):
             self.analysis_processes.append(
-                Process(target=data_analysis.DataAnalysis(self.config).run, args=(self.article_queue, self.result_queue))
+                Process(target=data_analysis.DataAnalysis(self.config).run,
+                        args=(self.article_queue, self.result_queue))
             )
         self.trader_process = Process(target=trader.Trader(self.config).run, args=self.result_queue)
 
+    # Starts the processes
+    def start(self):
+        for process in self.scraper_processes:
+            process.start()
+        for process in self.analysis_processes:
+            process.start()
+        self.trader_process.start()
+
+    # Shuts down the program
     def shutdown(self):
         for process in self.scraper_processes:
             process.join()
         for process in self.analysis_processes:
             process.join()
         self.trader_process.join()
+        exit()
 
 if __name__ == "main":
-    config = json.load(open("../config.json"))
-    Bot(config)
+    bot = Bot(json.load(open("../config.json")))    # Create the bot and start it
+    bot.start()

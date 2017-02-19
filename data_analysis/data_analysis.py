@@ -6,13 +6,15 @@ class DataAnalysis:
     def __init__(self, config):
         self.config = config
 
-    def handle_article(self, message, score_queue):
+    # Processes the given article and stores the results in the queue
+    def handle_article(self, article, result_queue):
         # TODO: call queue_result
-        # queue_result(score, score_queue)
+        # queue_result(score, result_queue)
         pass
 
-    def queue_result(self, message, score_queue):
-        score_queue.put(message)
+    # Stores the result in the result queue
+    def queue_result(self, result, result_queue):
+        result_queue.put(result)
 
     # Entry point for process
     def run(self, article_queue, score_queue):
