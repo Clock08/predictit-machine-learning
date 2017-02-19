@@ -17,8 +17,8 @@ class DataAnalysis:
         result_queue.put(result)
 
     # Entry point for process
-    def run(self, article_queue, score_queue):
+    def run(self, article_queue, result_queue):
         while True:
             article = article_queue.get(True)           # Gets articles from the queue and analyzes them
-            self.handle_article(article, score_queue)
+            self.handle_article(article, result_queue)
             time.sleep(self.config["data_analysis"]["poll_interval"])
