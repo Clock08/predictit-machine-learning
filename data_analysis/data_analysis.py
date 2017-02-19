@@ -19,6 +19,6 @@ class DataAnalysis:
     # Entry point for process
     def run(self, article_queue, score_queue):
         while True:
-            article = article_queue.get()
+            article = article_queue.get(True)           # Gets articles from the queue and analyzes them
             self.handle_article(article, score_queue)
             time.sleep(self.config["data_analysis"]["poll_interval"])
