@@ -16,5 +16,7 @@ class Trader:
         # TODO: queue in SQS
         pass
 
-if __name__ = "main":
-    trader = Trader(json.load(open("../config.json")))
+    def run(self, score_queue):
+        while True:
+            # TODO: Handle all trading functions
+            pass

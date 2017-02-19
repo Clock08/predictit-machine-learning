@@ -1,14 +1,17 @@
+import json
 from multiprocessing import Process, Queue
-from data_analysis import data_analysis
-from data_input import data_input
-from trader import trader
+
+import data_analysis
+import data_input
+import trader
+
 
 # Basic queue for the queue process
-class DataQueue:
+class Bot:
 
-    trade_port = 12345      # The port for trade process TODO: Change this to a config specified port
-    article_port_list = []  # The ports for scraping workers
-    analysis_port_list = [] # The ports for analysis workers
+    scraper_processes = []
+    analysis_processes = []
+    trader_process = None
 
     article_queue = Queue()
     score_queue = Queue()
@@ -16,18 +19,24 @@ class DataQueue:
     def __init__(self, config):
         self.config = config
 
-    def queue_article(self, article):
-        self.article_queue.put(article)
+        for num in range(0, config["data_input"]["num_workers"]):
+            self.scraper_processes.append(
+                Process(target=data_input.DataInput(self.config).run, args=self.article_queue)
+            )
+        for num in range(0, config["data_analysis"]["num_workers"]):
+            self.analysis_processes.append(
+                Process(target=data_analysis.DataAnalysis(self.config).run, args=(self.article_queue, self.score_queue))
+            )
 
-    def get_article(self):
-        self.article_queue.get(True)    # Return the first article. Block until item available otherwise.
+        self.trader_process = Process(target=trader.Trader(self.config).run, args=self.score_queue)
 
-    def queue_score(self, score):
-        self.score_queue.put(score)
+    def shutdown(self):
+        for process in self.scraper_processes:
+            process.join()
+        for process in self.analysis_processes:
+            process.join()
+        self.trader_process.join()
 
-    def get_score(self):
-        self.score_queue.get(True)  # Return the first score. Block until score available otherwise.
-
-    if __name__ == "main":
-        # p = Process()
-        pass
+if __name__ == "main":
+    config = json.load(open("../config.json"))
+    Bot(config)

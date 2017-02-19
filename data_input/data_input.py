@@ -1,4 +1,6 @@
 from news_api import NewsApi
+from multiprocessing import Queue
+
 import json
 import time
 import arrow
@@ -15,7 +17,7 @@ class DataInput:
                 "last_time_checked": None
             })
 
-    def pollForArticles(self):
+    def pollForArticles(self, article_queue):
         while True:
             for source in self.sources:
                 # Pull any new articles from that source
@@ -25,7 +27,7 @@ class DataInput:
 
                     # Only handle articles created after max time checked
                     if source["last_time_checked"] is None or source["last_time_checked"] < articleTime:
-                        self.queueArticle(article)
+                        self.queueArticle(article, article_queue)
 
                         if maxTime is None or maxTime < articleTime:
                             maxTime = articleTime
@@ -37,12 +39,12 @@ class DataInput:
                     source["last_time_checked"] = maxTime
 
             # Sleep for interval time
-            time.sleep(config["data_input"]["poll_interval"])
+            time.sleep(self.config["data_input"]["poll_interval"])
 
-    def queueArticle(self, article):
-        # TODO: Queue article in SQS
+    def queueArticle(self, article, queue):
         print(article)
+        queue.put(article);
 
-if __name__ == "main":
-    config = json.load(open("../config.json"))
-    DataInput(config).pollForArticles()
+    # Run method for consistency
+    def run(self, article_queue):
+        self.pollForArticles(article_queue)
