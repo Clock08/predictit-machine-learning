@@ -1,11 +1,11 @@
-from news_api import NewsApi
-from multiprocessing import Queue
+from data_input import news_api
 
-import json
 import time
 import arrow
 
+
 class DataInput:
+
     def __init__(self, config):
         self.config = config
 
@@ -13,7 +13,7 @@ class DataInput:
         for source in config["data_input"]["sources"]:
             self.sources.append({
                 "news_api_name": source["news_api_name"],
-                "news_api_instance": NewsApi(config["data_input"]["news_api"]["api_key"], source["news_api_name"]),
+                "news_api_instance": news_api.NewsApi(config["data_input"]["news_api"]["api_key"], source["news_api_name"]),
                 "last_time_checked": None
             })
 
@@ -43,8 +43,8 @@ class DataInput:
 
     def queueArticle(self, article, queue):
         print(article)
-        queue.put(article);
+        queue.put(article)
 
-    # Run method for consistency
+    # Entry point for process
     def run(self, article_queue):
         self.pollForArticles(article_queue)

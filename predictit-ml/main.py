@@ -14,7 +14,7 @@ class Bot:
     trader_process = None
 
     article_queue = Queue()
-    score_queue = Queue()
+    result_queue = Queue()
 
     def __init__(self, config):
         self.config = config
@@ -25,10 +25,9 @@ class Bot:
             )
         for num in range(0, config["data_analysis"]["num_workers"]):
             self.analysis_processes.append(
-                Process(target=data_analysis.DataAnalysis(self.config).run, args=(self.article_queue, self.score_queue))
+                Process(target=data_analysis.DataAnalysis(self.config).run, args=(self.article_queue, self.result_queue))
             )
-
-        self.trader_process = Process(target=trader.Trader(self.config).run, args=self.score_queue)
+        self.trader_process = Process(target=trader.Trader(self.config).run, args=self.result_queue)
 
     def shutdown(self):
         for process in self.scraper_processes:

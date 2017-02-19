@@ -1,7 +1,9 @@
 import json
 import urllib.request
 
+
 class NewsApi:
+
     def __init__(self, apiKey, source):
         self.apiKey = apiKey
         self.source = source

@@ -1,22 +1,22 @@
-import json
+import time
+
 
 class Trader:
+
     def __init__(self, config):
         self.config = config
 
-    def poll_for_messages(self):
-        while True:
-            sleep(config["trader"]["poll_interval"])
-
-    def handle_message(self, message):
+    def handle_result(self, result):
         # TODO: call queue_result
         pass
 
     def queue_result(self, message):
-        # TODO: queue in SQS
+        # TODO: queue in SQS           --  What is it queueing exactly? It only needs to take from the queue
         pass
 
-    def run(self, score_queue):
+    # Entry point for process
+    def run(self, result_queue):
         while True:
-            # TODO: Handle all trading functions
-            pass
+            result = result_queue.get()
+            self.handle_result(result)
+            time.sleep(self.config["trader"]["poll_interval"])  # Do we need to sleep, or shall we trade as soon as we have results?

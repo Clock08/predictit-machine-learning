@@ -1,22 +1,22 @@
-import json
+import time
 
-class DataAnalsyis:
+
+class DataAnalysis:
+
     def __init__(self, config):
         self.config = config
 
-    def poll_for_messages(self):
-        while True:
-            # TODO: call handle_message
-            sleep(config["data_analysis"]["poll_interval"])
-
-    def handle_message(self, message):
+    def handle_article(self, message, score_queue):
         # TODO: call queue_result
+        # queue_result(score, score_queue)
         pass
 
-    def queue_result(self, message):
-        # TODO: queue in SQS
-        pass
+    def queue_result(self, message, score_queue):
+        score_queue.put(message)
 
-    def run(self):
-        # TODO: Handle analysis functions
-        pass
+    # Entry point for process
+    def run(self, article_queue, score_queue):
+        while True:
+            article = article_queue.get()
+            self.handle_article(article, score_queue)
+            time.sleep(self.config["data_analysis"]["poll_interval"])
