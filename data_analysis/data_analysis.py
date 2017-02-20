@@ -3,8 +3,10 @@ import time
 
 class DataAnalysis:
 
-    def __init__(self, controller, config):
-        self.controller = controller
+    def __init__(self, article_queue, result_queue, message_queue, config):
+        self.article_queue = article_queue
+        self.result_queue = result_queue
+        self.message_queue = message_queue
         self.config = config
 
     # Processes the given article and stores the results in the queue
@@ -18,10 +20,10 @@ class DataAnalysis:
         self.controller.put_result(result)
 
     # Entry point for process
-    def run(self, article_queue):
+    def run(self):
         while True:
             try:
-                article = article_queue.get(True, 1)           # Gets articles from the queue and analyzes them
+                article = self.article_queue.get(True, 1)           # Gets articles from the queue and analyzes them
                 self.handle_article(article)
             except Exception:
                 pass

@@ -6,8 +6,9 @@ import arrow
 
 class DataInput:
 
-    def __init__(self, controller, config):
-        self.controller = controller
+    def __init__(self, article_queue, message_queue, config):
+        self.article_queue = article_queue
+        self.message_queue = message_queue
         self.config = config
 
         self.sources = []
@@ -48,9 +49,10 @@ class DataInput:
             # Sleep for interval time
             time.sleep(self.config["data_input"]["poll_interval"])
 
-    # Adds the given article to the given queue
+    # Adds the given article to the queue
     def queue_article(self, article):
-        self.controller.put_article(article)
+        self.message_queue.put("Article: " + article["title"])
+        self.article_queue.put(article)
 
     # Entry point for process
     def run(self):
