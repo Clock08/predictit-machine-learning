@@ -1,12 +1,11 @@
 import tkinter as tk
 
-from gui import page
+from gui.page import MainPage, StatsPage
 
 
 class Gui(tk.Tk):
 
     def __init__(self, bot):
-
         tk.Tk.__init__(self)
         tk.Tk.wm_title(self, "PredictIt Bot")
 
@@ -19,20 +18,19 @@ class Gui(tk.Tk):
 
         menu = tk.Menu(container)
         viewmenu = tk.Menu(menu, tearoff=0)
-        viewmenu.add_command(label="Control")
-        viewmenu.add_command(label="Stats")
         menu.add_cascade(label="View", menu=viewmenu)
-
+        viewmenu.add_command(label="Control", command=lambda: self.show_frame(MainPage))
+        viewmenu.add_command(label="Stats", command=lambda: self.show_frame(StatsPage))
         tk.Tk.config(self, menu=menu)
 
         self.frames = {}
 
-        for frameType in (page.MainPage, page.StatsPage):
+        for frameType in (MainPage, StatsPage):
             frame = frameType(container, self)
             self.frames[frameType] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.show_frame(page.MainPage)
+        self.show_frame(MainPage)
 
     def start(self):
         self.bot.start()
@@ -40,10 +38,12 @@ class Gui(tk.Tk):
     def stop(self):
         self.bot.stop()
 
+    def print_trade(self, str):
+        self.frames[MainPage].print_trade(str)
+
     def print(self, str):
-        self.frames[page.MainPage].print(str)
+        self.frames[MainPage].print(str)
 
     def show_frame(self, cont):
-
         frame = self.frames[cont]
         frame.tkraise()
