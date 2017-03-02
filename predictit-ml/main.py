@@ -2,7 +2,6 @@ from multiprocessing import Process, Queue
 import json
 import tkinter as tk
 
-from gui.gui import Gui
 from gui.page import MainPage, StatsPage
 from data_analysis.data_analysis import DataAnalysis
 from data_input.data_input import DataInput
@@ -35,7 +34,6 @@ class Bot:
             )
         self.trader_process = Process(target=Trader(self.result_queue, self.message_queue, self.config).run)
 
-        #self.gui = Gui(self)
         self.gui = tk.Tk()
         self.gui.geometry("1080x720")
 

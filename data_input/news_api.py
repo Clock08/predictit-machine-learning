@@ -18,13 +18,10 @@ class NewsApi:
         request_uri += "&sortBy=" + sort
 
         response = self.http.request("GET", request_uri)
-        try:
-            jsonobj = json.loads(response.data.decode("utf-8"))
-            if not jsonobj["status"] == "error":
-                return jsonobj["articles"]
-            else:
-                print("Error: the source \'" + self.source + "\' cannot be sorted by \'latest.\'"
-                    + " Changing the sort to \'top\'")
-                return self.get_articles(sort='top')
-        except UnicodeEncodeError as e:
-            return None
+        jsonobj = json.loads(response.data.decode("utf-8"))
+        if not jsonobj["status"] == "error":
+            return jsonobj["articles"]
+        else:
+            print("Error: the source \'" + self.source + "\' cannot be sorted by \'latest.\'"
+                + " Changing the sort to \'top\'")
+            return self.get_articles(sort='top')
